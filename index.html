@@ -1,0 +1,1658 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestão 4.0 do Leite - Tecnologia e Inovação</title>
+  <link rel="icon" href="img/logo.jpg" type="image/svg+xml">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --primary-green: #22c55e;
+      --primary-blue: #3b82f6;
+      --dark-green: #16a34a;
+      --light-green: #dcfce7;
+      --tech-blue: #0ea5e9;
+      --bg-gradient: linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 50%, #f8fafc 100%);
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-gradient);
+      color: #1f2937;
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(34, 197, 94, 0.2);
+      border-radius: 16px;
+      padding: 2rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 20px rgba(34, 197, 94, 0.1);
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 40px rgba(34, 197, 94, 0.15);
+      border-color: var(--primary-green);
+    }
+
+    .tech-card {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(240, 253, 244, 0.95) 100%);
+      border: 2px solid transparent;
+      border-radius: 20px;
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.4s ease;
+    }
+
+    .tech-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary-green), var(--tech-blue), var(--primary-green));
+    }
+
+    .tech-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      border-color: var(--primary-green);
+      box-shadow: 0 25px 50px rgba(34, 197, 94, 0.2);
+    }
+
+    .btn {
+      background: linear-gradient(135deg, var(--primary-green), var(--dark-green));
+      color: white;
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn:hover {
+      background: linear-gradient(135deg, var(--dark-green), var(--primary-green));
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(34, 197, 94, 0.4);
+    }
+
+    .btn-secondary {
+      background: linear-gradient(135deg, var(--tech-blue), #0284c7);
+      box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+    }
+
+    .btn-secondary:hover {
+      background: linear-gradient(135deg, #0284c7, var(--tech-blue));
+      box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+    }
+
+    .input, .select {
+      background: rgba(255, 255, 255, 0.9);
+      border: 2px solid rgba(34, 197, 94, 0.3);
+      color: #1f2937;
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      width: 100%;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .input:focus, .select:focus {
+      outline: none;
+      border-color: var(--primary-green);
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.1);
+    }
+
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      height: 100vh;
+      width: 280px;
+      background: linear-gradient(180deg, rgba(34, 197, 94, 0.95) 0%, rgba(22, 163, 74, 0.95) 100%);
+      backdrop-filter: blur(10px);
+      padding: 2rem 1rem;
+      z-index: 1000;
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+      overflow-y: auto;
+    }
+
+    .sidebar.active {
+      transform: translateX(0);
+    }
+
+    .sidebar-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .sidebar-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      color: white;
+      text-decoration: none;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      margin-bottom: 0.5rem;
+    }
+
+    .nav-item:hover, .nav-item.active {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateX(5px);
+    }
+
+    .main-content {
+      margin-left: 0;
+      transition: margin-left 0.3s ease;
+      min-height: 100vh;
+    }
+
+    .header {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 2px solid rgba(34, 197, 94, 0.2);
+      padding: 1rem 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo-container {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, var(--primary-green), var(--tech-blue));
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+      font-size: 2rem;
+      color: white;
+    }
+
+    .company-logo {
+      width: 60px;
+      height: 60px;
+      border-radius: 16px;
+      object-fit: cover;
+      box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+    }
+
+    .login-logo {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin: 0 auto 1rem;
+      box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+    }
+
+    .stat-widget {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(240, 253, 244, 0.95) 100%);
+      border: 2px solid rgba(34, 197, 94, 0.2);
+      border-radius: 16px;
+      padding: 1.5rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .stat-widget::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--primary-green);
+    }
+
+    .stat-widget:hover {
+      transform: translateY(-3px);
+      border-color: var(--primary-green);
+      box-shadow: 0 15px 30px rgba(34, 197, 94, 0.15);
+    }
+
+    .chart-container {
+      position: relative;
+      height: 350px;
+      margin: 1rem 0;
+    }
+
+    .grid {
+      display: grid;
+      gap: 2rem;
+    }
+
+    .grid-cols-1 { grid-template-columns: repeat(1, 1fr); }
+    .grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+    .grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+    .grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+
+    @media (max-width: 768px) {
+      .grid-cols-2, .grid-cols-3, .grid-cols-4 {
+        grid-template-columns: repeat(1, 1fr);
+      }
+    }
+
+    .alert {
+      padding: 1.5rem;
+      border-radius: 12px;
+      margin-bottom: 1rem;
+      border-left: 4px solid;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(10px);
+    }
+
+    .alert-success {
+      border-color: var(--primary-green);
+      background: rgba(34, 197, 94, 0.1);
+    }
+
+    .alert-warning {
+      border-color: #f59e0b;
+      background: rgba(245, 158, 11, 0.1);
+    }
+
+    .alert-info {
+      border-color: var(--tech-blue);
+      background: rgba(59, 130, 246, 0.1);
+    }
+
+    .hidden { display: none; }
+    .block { display: block; }
+    .flex { display: flex; }
+    .items-center { align-items: center; }
+    .justify-between { justify-content: space-between; }
+    .justify-center { justify-content: center; }
+    .text-center { text-align: center; }
+    .space-y-4 > * + * { margin-top: 1rem; }
+    .space-y-6 > * + * { margin-top: 1.5rem; }
+    .space-x-4 > * + * { margin-left: 1rem; }
+
+    .image-container {
+      width: 100%;
+      border-radius: 12px;
+      overflow: hidden;
+      margin: 1rem 0;
+      box-shadow: 0 4px 15px rgba(34, 197, 94, 0.1);
+    }
+
+    .image-container img {
+      width: 100%;
+      height: auto;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .image-container:hover img {
+      transform: scale(1.05);
+    }
+
+    .hero-image {
+      height: 400px;
+    }
+
+    .tech-image {
+      height: 200px;
+    }
+
+    .chart-image {
+      height: 150px;
+    }
+
+    .process-image {
+      height: 300px;
+    }
+
+    .map-image {
+      height: 400px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(-30px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    .fade-in {
+      animation: fadeIn 0.8s ease-out;
+    }
+
+    .slide-in {
+      animation: slideIn 0.8s ease-out;
+    }
+
+    .pulse-animation {
+      animation: pulse 2s infinite;
+    }
+
+    .tech-icon {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, var(--primary-green), var(--tech-blue));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem;
+      color: white;
+      font-size: 1.5rem;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: rgba(34, 197, 94, 0.2);
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 1rem 0;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary-green), var(--tech-blue));
+      border-radius: 4px;
+      transition: width 0.3s ease;
+    }
+
+    .simulator-control {
+      background: rgba(255, 255, 255, 0.9);
+      border: 2px solid rgba(34, 197, 94, 0.3);
+      border-radius: 12px;
+      padding: 1rem;
+      margin: 1rem 0;
+    }
+
+    .slider {
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: rgba(34, 197, 94, 0.2);
+      outline: none;
+      -webkit-appearance: none;
+    }
+
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--primary-green);
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(34, 197, 94, 0.3);
+    }
+
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .modal.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 20px;
+      padding: 2rem;
+      max-width: 600px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      transform: scale(0.8);
+      transition: transform 0.3s ease;
+    }
+
+    .modal.active .modal-content {
+      transform: scale(1);
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(34, 197, 94, 0.1);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--primary-green);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--dark-green);
+    }
+  </style>
+</head>
+<body>
+  
+  <!-- Sidebar -->
+  <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+  <nav class="sidebar" id="sidebar">
+    <div class="text-center mb-8">
+      <img src="img/logo.jpg" alt="Logo da Empresa" class="company-logo mx-auto mb-4">
+      <h3 class="text-white font-bold text-lg">Gestão 4.0</h3>
+      <p class="text-green-100 text-sm">do Leite</p>
+    </div>
+    
+    <div class="space-y-2">
+      <a href="#" class="nav-item active" onclick="showPage('home', this)">
+        <i class="fas fa-home"></i>
+        <span>Início</span>
+      </a>
+      <a href="#" class="nav-item" onclick="showPage('chain', this)">
+        <i class="fas fa-link"></i>
+        <span>Cadeia Láctea</span>
+      </a>
+      <a href="#" class="nav-item" onclick="showPage('monitoring', this)">
+        <i class="fas fa-wifi"></i>
+        <span>Monitoramento IoT</span>
+      </a>
+      <a href="#" class="nav-item" onclick="showPage('analytics', this)">
+        <i class="fas fa-chart-line"></i>
+        <span>Big Data Analytics</span>
+      </a>
+      <a href="#" class="nav-item" onclick="showPage('robotics', this)">
+        <i class="fas fa-robot"></i>
+        <span>Robótica</span>
+      </a>
+      <a href="#" class="nav-item" onclick="showPage('challenges', this)">
+        <i class="fas fa-exclamation-triangle"></i>
+        <span>Desafios</span>
+      </a>
+      <a href="#" class="nav-item" onclick="showPage('simulator', this)">
+        <i class="fas fa-cogs"></i>
+        <span>Simulador</span>
+      </a>
+    </div>
+    
+    <div class="mt-8 pt-4 border-t border-green-300">
+      <button onclick="logout()" class="w-full bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg transition-colors">
+        <i class="fas fa-sign-out-alt mr-2"></i>
+        Sair
+      </button>
+    </div>
+  </nav>
+
+  <!-- Login Screen -->
+  <div id="loginScreen" class="flex items-center justify-center min-h-screen">
+    <div class="card max-w-md w-full mx-4">
+      <div class="text-center mb-8">
+        <img src="img/logo.jpg" alt="Logo da Empresa" class="login-logo">
+        <h1 class="text-3xl font-bold text-gray-800 mb-2">Bem-vindo à Gestão 4.0 do Leite!</h1>
+        <p class="text-gray-600">Insira seu nome para acessar seu dashboard</p>
+      </div>
+      
+      <form onsubmit="login(event)" class="space-y-6">
+        <div>
+          <label for="producerName" class="block text-sm font-semibold mb-2 text-gray-700">Nome do Produtor</label>
+          <input type="text" id="producerName" class="input" placeholder="Digite seu nome" required>
+        </div>
+        <button type="submit" class="btn w-full">
+          <i class="fas fa-sign-in-alt"></i>
+          Entrar
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Main Dashboard -->
+  <div id="dashboard" class="hidden">
+    <!-- Header -->
+    <header class="header">
+      <div class="container">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-4">
+            <button onclick="toggleSidebar()" class="btn-secondary">
+              <i class="fas fa-bars"></i>
+            </button>
+            <img src="img/logo.jpg" alt="Logo da Empresa" class="company-logo">
+            <div>
+              <h1 class="text-xl font-bold text-gray-800">Gestão 4.0 do Leite</h1>
+              <p class="text-sm text-gray-600">Tecnologia e Inovação</p>
+            </div>
+          </div>
+          <div class="flex items-center space-x-4">
+            <span id="userGreeting" class="text-gray-700 font-medium"></span>
+            <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white font-bold">
+              <span id="userInitial"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="main-content">
+      <!-- Home Page -->
+      <div id="homePage" class="page">
+        <div class="container py-12">
+          <!-- Hero Section -->
+          <div class="text-center mb-16 fade-in">
+            <h1 class="text-5xl font-bold text-gray-800 mb-6">Gestão 4.0 do Leite</h1>
+            <h2 class="text-2xl text-gray-600 mb-8">Modernizando a produção do leite</h2>
+            <p class="text-xl text-gray-500 mb-12 max-w-3xl mx-auto">Tecnologia, dados e inovação para um leite mais seguro e rentável</p>
+            
+            <!-- Imagem principal: Vacas, sensores IoT e drones -->
+            <div class="image-container hero-image mb-12">
+              <img src="https://canaldoleite.com/admarq/images/gado_leite_-_ari_dias_-_aen_4.jpg">
+            </div>
+            
+            <button onclick="showPage('chain')" class="btn text-xl px-8 py-4 pulse-animation">
+              <i class="fas fa-rocket"></i>
+              Explorar Dashboard
+            </button>
+          </div>
+
+          <!-- Real-time Data Icons -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+            <div class="tech-card text-center">
+              <div class="tech-icon">
+                <i class="fas fa-thermometer-half"></i>
+              </div>
+              <h3 class="text-lg font-bold mb-2">Temperatura do Tanque</h3>
+              <div class="text-3xl font-bold text-green-600 mb-2">4.2°C</div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 85%;"></div>
+              </div>
+            </div>
+            
+            <div class="tech-card text-center">
+              <div class="tech-icon">
+                <i class="fas fa-tint"></i>
+              </div>
+              <h3 class="text-lg font-bold mb-2">Nível de Produção</h3>
+              <div class="text-3xl font-bold text-blue-600 mb-2">1,250L</div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 70%;"></div>
+              </div>
+            </div>
+            
+            <div class="tech-card text-center">
+              <div class="tech-icon">
+                <i class="fas fa-heartbeat"></i>
+              </div>
+              <h3 class="text-lg font-bold mb-2">Saúde do Rebanho</h3>
+              <div class="text-3xl font-bold text-green-600 mb-2">92%</div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 92%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Welcome Message -->
+          <div class="card text-center">
+            <h3 class="text-2xl font-bold mb-4" id="personalizedWelcome">Olá! Vamos otimizar sua produção!</h3>
+            <p class="text-gray-600">Explore as diferentes seções do dashboard para descobrir como a tecnologia 4.0 está revolucionando a produção leiteira.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cadeia Láctea Digital -->
+      <div id="chainPage" class="page hidden">
+        <div class="container py-12">
+          <div class="text-center mb-12 fade-in">
+            <h1 class="text-4xl font-bold text-gray-800 mb-4">Cadeia Láctea Digital</h1>
+            <p class="text-xl text-gray-600">Descubra como cada tecnologia resolve problemas específicos do ciclo do leite</p>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Ordenha Automatizada -->
+            <div class="tech-card" onclick="showTechModal('ordenha')">
+              <div class="tech-icon">
+                <i class="fas fa-robot"></i>
+              </div>
+              <h3 class="text-xl font-bold mb-4">Ordenha Automatizada</h3>
+              <p class="text-gray-600 mb-4">Robôs de ordenha monitoram higiene e fluxo, detectando alterações na qualidade.</p>
+              
+              <!-- Imagem: Robô de ordenha -->
+              <div class="image-container tech-image mb-4">
+                <img src="https://cdn.gea.com/-/media/migratedfromtridion/products/apollo-milk-system-5763.jpg?h=675&iar=0&w=1200&rev=855f6b16334f47be977d77e664bf66e7&hash=7AC32FF83E2264D96168B8715F3028E9" alt="Robô de ordenha automatizada">
+              </div>
+              
+              <div class="grid grid-cols-2 gap-4 text-center">
+                <div>
+                  <div class="text-2xl font-bold text-green-600">95%</div>
+                  <div class="text-sm text-gray-500">Ordenha automatizada</div>
+                </div>
+                <div>
+                  <div class="text-2xl font-bold text-blue-600">0.5%</div>
+                  <div class="text-sm text-gray-500">Contaminação</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tanques Inteligentes -->
+            <div class="tech-card" onclick="showTechModal('tanques')">
+              <div class="tech-icon">
+                <i class="fas fa-database"></i>
+              </div>
+              <h3 class="text-xl font-bold mb-4">Tanques Inteligentes</h3>
+              <p class="text-gray-600 mb-4">Sensores IoT monitoram temperatura, pH e nível em tempo real com alertas automáticos.</p>
+              
+              <!-- Imagem: Tanques com sensores IoT -->
+              <div class="image-container tech-image mb-4">
+                <img src="https://img.freepik.com/fotos-premium/tanque-de-armazenamento-de-liquido-e-tubulacao-na-laticinio-para-a-producao-de-queijo-gruyere-de-comte-em-franche-comte-borgonha-na-franca_250132-15871.jpg" alt="Tanques com sensores IoT">
+              </div>
+              
+              <div class="grid grid-cols-2 gap-4 text-center">
+                <div>
+                  <div class="text-2xl font-bold text-green-600">4.2°C</div>
+                  <div class="text-sm text-gray-500">Temperatura média</div>
+                </div>
+                <div>
+                  <div class="text-2xl font-bold text-blue-600">70%</div>
+                  <div class="text-sm text-gray-500">Nível médio</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Distribuição Rastreada -->
+            <div class="tech-card" onclick="showTechModal('distribuicao')">
+              <div class="tech-icon">
+                <i class="fas fa-truck"></i>
+              </div>
+              <h3 class="text-xl font-bold mb-4">Distribuição Rastreada</h3>
+              <p class="text-gray-600 mb-4">Rastreamento GPS e sensores nos caminhões garantem entrega dentro do padrão.</p>
+              
+              <!-- Imagem: Caminhão com GPS e sensores -->
+              <div class="image-container tech-image mb-4">
+                <img src="https://static.wixstatic.com/media/814ec4_80cc646110b84e1db4eb586dd6606d60~mv2.jpg/v1/fill/w_1920,h_1080,al_c,q_90/efficient-heavy-vehicle-tracking-with-obd-data-reading-devices.jpg" alt="Caminhão com GPS e sensores">
+              </div>
+              
+              <div class="grid grid-cols-2 gap-4 text-center">
+                <div>
+                  <div class="text-2xl font-bold text-green-600">5%</div>
+                  <div class="text-sm text-gray-500">Atraso médio</div>
+                </div>
+                <div>
+                  <div class="text-2xl font-bold text-blue-600">98%</div>
+                  <div class="text-sm text-gray-500">Entregas no padrão</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Pastagem Monitorada -->
+            <div class="tech-card" onclick="showTechModal('pastagem')">
+              <div class="tech-icon">
+                <i class="fas fa-seedling"></i>
+              </div>
+              <h3 class="text-xl font-bold mb-4">Pastagem Monitorada</h3>
+              <p class="text-gray-600 mb-4">Drones analisam saúde da grama, permitindo ações rápidas de recuperação.</p>
+              
+              <!-- Imagem: Drone sobrevoando pastagem -->
+              <div class="image-container tech-image mb-4">
+                <img src="https://blog.verde.ag/pt/wp-content/uploads/2023/03/Entenda-o-que-e-o-sensoriamento-remoto-e-como-ele-otimiza-o-manejo-agricola.jpg" alt="Drone sobrevoando pastagem">
+              </div>
+              
+              <div class="grid grid-cols-2 gap-4 text-center">
+                <div>
+                  <div class="text-2xl font-bold text-green-600">85%</div>
+                  <div class="text-sm text-gray-500">Área com índice ótimo</div>
+                </div>
+                <div>
+                  <div class="text-2xl font-bold text-blue-600">15%</div>
+                  <div class="text-sm text-gray-500">Área em recuperação</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Monitoramento IoT -->
+      <div id="monitoringPage" class="page hidden">
+        <div class="container py-12">
+          <div class="text-center mb-12 fade-in">
+            <h1 class="text-4xl font-bold text-gray-800 mb-4">Monitoramento em Tempo Real</h1>
+            <p class="text-xl text-gray-600">IoT & Sensores para soluções rápidas e eficazes</p>
+          </div>
+
+          <!-- Widgets de Monitoramento -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+            <div class="stat-widget">
+              <div class="tech-icon">
+                <i class="fas fa-thermometer-half"></i>
+              </div>
+              <h3 class="text-lg font-bold mb-2">Tanques de Leite</h3>
+              <div class="text-3xl font-bold text-green-600 mb-2">4.2°C</div>
+              <p class="text-sm text-gray-500 mb-4">Temperatura ideal mantida</p>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 95%;"></div>
+              </div>
+              <p class="text-xs text-gray-400 mt-2">Evita contaminação</p>
+            </div>
+
+            <div class="stat-widget">
+              <div class="tech-icon">
+                <i class="fas fa-heartbeat"></i>
+              </div>
+              <h3 class="text-lg font-bold mb-2">Vacas Monitoradas</h3>
+              <div class="text-3xl font-bold text-blue-600 mb-2">92%</div>
+              <p class="text-sm text-gray-500 mb-4">Vacas saudáveis</p>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 92%;"></div>
+              </div>
+              <p class="text-xs text-gray-400 mt-2">Detecção precoce de mastite</p>
+            </div>
+
+            <div class="stat-widget">
+              <div class="tech-icon">
+                <i class="fas fa-leaf"></i>
+              </div>
+              <h3 class="text-lg font-bold mb-2">Pastagem</h3>
+              <div class="text-3xl font-bold text-green-600 mb-2">78%</div>
+              <p class="text-sm text-gray-500 mb-4">Área saudável</p>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 78%;"></div>
+              </div>
+              <p class="text-xs text-gray-400 mt-2">Ações preventivas ativas</p>
+            </div>
+          </div>
+
+          <!-- Alertas em Tempo Real -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="card">
+              <h3 class="text-xl font-bold mb-4">Alertas Ativos</h3>
+              <div class="space-y-4">
+                <div class="alert alert-success">
+                  <div class="flex items-center">
+                    <i class="fas fa-check-circle text-green-600 mr-3"></i>
+                    <div>
+                      <strong>Mastite detectada precocemente</strong>
+                      <p class="text-sm">3 casos identificados → Tratamento imediato aplicado</p>
+                      <p class="text-xs text-gray-500">Evitou perdas de 150 litros/mês</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="alert alert-warning">
+                  <div class="flex items-center">
+                    <i class="fas fa-exclamation-triangle text-yellow-600 mr-3"></i>
+                    <div>
+                      <strong>Temperatura do tanque 2 elevada</strong>
+                      <p class="text-sm">4.8°C → Sistema de refrigeração ativado</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="alert alert-info">
+                  <div class="flex items-center">
+                    <i class="fas fa-info-circle text-blue-600 mr-3"></i>
+                    <div>
+                      <strong>Rotação de pastagem recomendada</strong>
+                      <p class="text-sm">Setor A → Mover para Setor B em 2 dias</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <h3 class="text-xl font-bold mb-4">Gráfico de Monitoramento</h3>
+              <div class="chart-container">
+                <canvas id="monitoringChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Big Data Analytics -->
+      <div id="analyticsPage" class="page hidden">
+        <div class="container py-12">
+          <div class="text-center mb-12 fade-in">
+            <h1 class="text-4xl font-bold text-gray-800 mb-4">Big Data Analytics</h1>
+            <p class="text-xl text-gray-600">Dados que ajudam a resolver problemas de produtividade, custos e bem-estar</p>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+            <!-- Produtividade -->
+            <div class="card text-center">
+              <div class="tech-icon">
+                <i class="fas fa-chart-line"></i>
+              </div>
+              <h3 class="text-xl font-bold mb-4">Produtividade por Vaca</h3>
+              <div class="text-4xl font-bold text-green-600 mb-2">28L</div>
+              <p class="text-gray-500 mb-4">Média diária por vaca</p>
+              
+              <p class="text-sm text-gray-600">Identifica vacas com baixa produção para ajuste de manejo</p>
+            </div>
+
+            <!-- Custo x Receita -->
+            <div class="card text-center">
+              <div class="tech-icon">
+                <i class="fas fa-dollar-sign"></i>
+              </div>
+              <h3 class="text-xl font-bold mb-4">Custo x Receita</h3>
+              <div class="grid grid-cols-2 gap-4 mb-4">
+                <div>
+                  <div class="text-2xl font-bold text-red-500">R$ 3,50</div>
+                  <div class="text-sm text-gray-500">Custo/litro</div>
+                </div>
+                <div>
+                  <div class="text-2xl font-bold text-green-600">R$ 4,80</div>
+                  <div class="text-sm text-gray-500">Venda/litro</div>
+                </div>
+              </div>
+              <div class="text-3xl font-bold text-blue-600 mb-4">37%</div>
+              <p class="text-gray-500 mb-4">Margem de lucro</p>
+              <p class="text-sm text-gray-600">Decisões de investimento em ração ou robôs</p>
+            </div>
+
+            <!-- Bem-estar Animal -->
+            <div class="card text-center">
+              <div class="tech-icon">
+                <i class="fas fa-heart"></i>
+              </div>
+              <h3 class="text-xl font-bold mb-4">Bem-estar Animal</h3>
+              <div class="text-4xl font-bold text-green-600 mb-2">82%</div>
+              <p class="text-gray-500 mb-4">Índice médio de bem-estar</p>
+              
+              <div class="progress-bar mb-4">
+                <div class="progress-fill" style="width: 82%;"></div>
+              </div>
+              
+              <p class="text-sm text-gray-600">Evita doenças e aumenta produtividade</p>
+            </div>
+          </div>
+
+          <!-- Simulador de Impacto -->
+          <div class="card">
+            <h3 class="text-xl font-bold mb-6">Simulador de Impacto</h3>
+            <p class="text-gray-600 mb-6">Ajuste os parâmetros e veja o impacto imediato na produção e rentabilidade</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div class="simulator-control">
+                <label class="block text-sm font-semibold mb-2">Investimento em Ração (R$)</label>
+                <input type="range" class="slider" min="1000" max="10000" value="5000" id="racaoSlider" oninput="updateSimulation()">
+                <div class="text-center mt-2">R$ <span id="racaoValue">5.000</span></div>
+              </div>
+              
+              <div class="simulator-control">
+                <label class="block text-sm font-semibold mb-2">Número de Sensores IoT</label>
+                <input type="range" class="slider" min="5" max="50" value="20" id="sensoresSlider" oninput="updateSimulation()">
+                <div class="text-center mt-2"><span id="sensoresValue">20</span> sensores</div>
+              </div>
+              
+              <div class="simulator-control">
+                <label class="block text-sm font-semibold mb-2">Robôs de Ordenha</label>
+                <input type="range" class="slider" min="1" max="5" value="2" id="robotsSlider" oninput="updateSimulation()">
+                <div class="text-center mt-2"><span id="robotsValue">2</span> robôs</div>
+              </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+              <div class="text-center">
+                <div class="text-3xl font-bold text-green-600" id="produtividadeResult">+15%</div>
+                <div class="text-sm text-gray-500">Aumento na Produtividade</div>
+              </div>
+              <div class="text-center">
+                <div class="text-3xl font-bold text-blue-600" id="reducaoResult">-8%</div>
+                <div class="text-sm text-gray-500">Redução de Perdas</div>
+              </div>
+              <div class="text-center">
+                <div class="text-3xl font-bold text-green-600" id="lucroResult">R$ 12.500</div>
+                <div class="text-sm text-gray-500">Lucro Mensal Estimado</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Robótica e Automação -->
+      <div id="roboticsPage" class="page hidden">
+        <div class="container py-12">
+          <div class="text-center mb-12 fade-in">
+            <h1 class="text-4xl font-bold text-gray-800 mb-4">Robótica e Automação</h1>
+            <p class="text-xl text-gray-600">Soluções automatizadas para higiene, ordenha e monitoramento</p>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+            <!-- Higiene Automatizada -->
+            <div class="tech-card">
+              <div class="tech-icon">
+                <i class="fas fa-broom"></i>
+              </div>
+              <h3 class="text-xl font-bold mb-4">Higiene Automatizada</h3>
+              
+              <!-- GIF/Animação: Robôs limpando tanques e ordenhas -->
+              <div class="image-container tech-image mb-4">
+                <img src="https://schippers.com.br/wp-content/uploads/2022/11/Arte-Blog-Higiene-de-bezerreiros-como-melhorar.png" alt="Robôs limpando tanques e ordenhas">
+              </div>
+              
+              <div class="space-y-4">
+                <div class="flex justify-between items-center">
+                  <span class="text-gray-600">Redução de contaminação:</span>
+                  <span class="font-bold text-green-600">15%</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-gray-600">Tempo de limpeza:</span>
+                  <span class="font-bold text-blue-600">-40%</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-gray-600">Economia de água:</span>
+                  <span class="font-bold text-green-600">25%</span>
+                </div>
+              </div>
+              
+              <div class="mt-6 p-4 bg-green-50 rounded-lg">
+                <p class="text-sm text-green-700">
+                  <i class="fas fa-lightbulb mr-2"></i>
+                  <strong>Como resolve:</strong> Limpeza padronizada elimina variações humanas, garantindo higiene consistente.
+                </p>
+              </div>
+            </div>
+
+            <!-- Monitoramento de Saúde -->
+            <div class="tech-card">
+              <div class="tech-icon">
+                <i class="fas fa-stethoscope"></i>
+              </div>
+              <h3 class="text-xl font-bold mb-4">Monitoramento de Saúde</h3>
+              
+              <!-- Imagem: Sensores detectando problemas de saúde -->
+              <div class="image-container tech-image mb-4">
+                <img src="https://opresenterural.com.br/wp-content/uploads/2019/03/Allflex-monitoramento-Bovinos.jpg" alt="Sensores detectando problemas de saúde">
+              </div>
+              
+              <div class="space-y-4">
+                <div class="flex justify-between items-center">
+                  <span class="text-gray-600">Detecção precoce:</span>
+                  <span class="font-bold text-green-600">95%</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-gray-600">Aumento de eficiência:</span>
+                  <span class="font-bold text-blue-600">20%</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-gray-600">Redução de custos veterinários:</span>
+                  <span class="font-bold text-green-600">30%</span>
+                </div>
+              </div>
+              
+              <div class="mt-6 p-4 bg-blue-50 rounded-lg">
+                <p class="text-sm text-blue-700">
+                  <i class="fas fa-lightbulb mr-2"></i>
+                  <strong>Como resolve:</strong> Sensores detectam alterações antes dos sintomas visíveis, permitindo tratamento imediato.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Processo de Ordenha Robotizada -->
+          <div class="card">
+            <h3 class="text-xl font-bold mb-6">Processo de Ordenha Robotizada</h3>
+            
+            <!-- Animação: Processo completo de ordenha robotizada passo a passo -->
+            <div class="image-container process-image mb-6">
+              <img src="https://www.comprerural.com/wp-content/uploads/2019/01/ordenha-robotizada.jpg" alt="Processo completo de ordenha robotizada passo a passo">
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div class="text-center p-4 bg-green-50 rounded-lg">
+                <div class="tech-icon bg-green-500 mx-auto mb-2" style="width: 40px; height: 40px;">
+                  <i class="fas fa-search text-sm"></i>
+                </div>
+                <h4 class="font-bold text-sm mb-1">1. Identificação</h4>
+                <p class="text-xs text-gray-600">Chip RFID identifica a vaca</p>
+              </div>
+              
+              <div class="text-center p-4 bg-blue-50 rounded-lg">
+                <div class="tech-icon bg-blue-500 mx-auto mb-2" style="width: 40px; height: 40px;">
+                  <i class="fas fa-shower text-sm"></i>
+                </div>
+                <h4 class="font-bold text-sm mb-1">2. Higienização</h4>
+                <p class="text-xs text-gray-600">Limpeza automática dos tetos</p>
+              </div>
+              
+              <div class="text-center p-4 bg-yellow-50 rounded-lg">
+                <div class="tech-icon bg-yellow-500 mx-auto mb-2" style="width: 40px; height: 40px;">
+                  <i class="fas fa-tint text-sm"></i>
+                </div>
+                <h4 class="font-bold text-sm mb-1">3. Ordenha</h4>
+                <p class="text-xs text-gray-600">Extração automatizada do leite</p>
+              </div>
+              
+              <div class="text-center p-4 bg-purple-50 rounded-lg">
+                <div class="tech-icon bg-purple-500 mx-auto mb-2" style="width: 40px; height: 40px;">
+                  <i class="fas fa-chart-line text-sm"></i>
+                </div>
+                <h4 class="font-bold text-sm mb-1">4. Análise</h4>
+                <p class="text-xs text-gray-600">Qualidade e saúde em tempo real</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Desafios e Barreiras -->
+      <div id="challengesPage" class="page hidden">
+        <div class="container py-12">
+          <div class="text-center mb-12 fade-in">
+            <h1 class="text-4xl font-bold text-gray-800 mb-4">Desafios e Barreiras</h1>
+            <p class="text-xl text-gray-600">Problemas da implementação e como a tecnologia resolve</p>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Custo Elevado -->
+            <div class="card">
+              <div class="tech-icon bg-red-500">
+                <i class="fas fa-dollar-sign"></i>
+              </div>
+              <h3 class="text-xl font-bold mb-4 text-red-600">Custo Elevado</h3>
+              
+              <div class="space-y-4 mb-6">
+                <div class="p-4 bg-red-50 rounded-lg">
+                  <h4 class="font-bold text-red-700 mb-2">Problema:</h4>
+                  <p class="text-sm text-red-600">Investimento médio de R$ 150.000 para implementação completa</p>
+                </div>
+                
+                <div class="p-4 bg-green-50 rounded-lg">
+                  <h4 class="font-bold text-green-700 mb-2">Solução:</h4>
+                  <p class="text-sm text-green-600">ROI calculado pelo Big Data Analytics mostra retorno em 3 anos</p>
+                </div>
+              </div>
+              
+              <div class="text-center">
+                <div class="text-2xl font-bold text-green-600">300%</div>
+                <div class="text-sm text-gray-500">ROI em 5 anos</div>
+              </div>
+            </div>
+
+            <!-- Resistência Cultural -->
+            <div class="card">
+              <div class="tech-icon bg-orange-500">
+                <i class="fas fa-users"></i>
+              </div>
+              <h3 class="text-xl font-bold mb-4 text-orange-600">Resistência Cultural</h3>
+              
+              <div class="space-y-4 mb-6">
+                <div class="p-4 bg-orange-50 rounded-lg">
+                  <h4 class="font-bold text-orange-700 mb-2">Problema:</h4>
+                  <p class="text-sm text-orange-600">35% dos produtores relutam em adotar novas tecnologias</p>
+                </div>
+                
+                <div class="p-4 bg-green-50 rounded-lg">
+                  <h4 class="font-bold text-green-700 mb-2">Solução:</h4>
+                  <p class="text-sm text-green-600">Dashboard educativo ajuda na adoção gradual</p>
+                </div>
+              </div>
+              
+              <div class="progress-bar mb-4">
+                <div class="progress-fill" style="width: 65%;"></div>
+              </div>
+              
+              <div class="text-center">
+                <div class="text-2xl font-bold text-green-600">65%</div>
+                <div class="text-sm text-gray-500">Taxa de adoção atual</div>
+              </div>
+            </div>
+
+            <!-- Infraestrutura Limitada -->
+            <div class="card">
+              <div class="tech-icon bg-purple-500">
+                <i class="fas fa-wifi"></i>
+              </div>
+              <h3 class="text-xl font-bold mb-4 text-purple-600">Infraestrutura Limitada</h3>
+              
+              <div class="space-y-4 mb-6">
+                <div class="p-4 bg-purple-50 rounded-lg">
+                  <h4 class="font-bold text-purple-700 mb-2">Problema:</h4>
+                  <p class="text-sm text-purple-600">20% das propriedades sem internet adequada</p>
+                </div>
+                
+                <div class="p-4 bg-green-50 rounded-lg">
+                  <h4 class="font-bold text-green-700 mb-2">Solução:</h4>
+                  <p class="text-sm text-green-600">Soluções offline ou via rede local IoT</p>
+                </div>
+              </div>
+              
+              <div class="text-center">
+                <div class="text-2xl font-bold text-green-600">95%</div>
+                <div class="text-sm text-gray-500">Cobertura possível</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Boas Práticas -->
+          <div class="card mt-12">
+            <h3 class="text-xl font-bold mb-6">Boas Práticas para Superar Desafios</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="space-y-4">
+                <div class="alert alert-success">
+                  <h4 class="font-bold mb-2">💡 Implementação Gradual</h4>
+                  <p class="text-sm">Comece com sensores básicos e expanda conforme o ROI se comprova.</p>
+                </div>
+                
+                <div class="alert alert-info">
+                  <h4 class="font-bold mb-2">📚 Capacitação Contínua</h4>
+                  <p class="text-sm">Treinamento regular da equipe aumenta a aceitação da tecnologia.</p>
+                </div>
+              </div>
+              
+              <div class="space-y-4">
+                <div class="alert alert-warning">
+                  <h4 class="font-bold mb-2">🤝 Parcerias Estratégicas</h4>
+                  <p class="text-sm">Cooperativas podem dividir custos de implementação e manutenção.</p>
+                </div>
+                
+                <div class="alert alert-info">
+                  <h4 class="font-bold mb-2">📊 Monitoramento Constante</h4>
+                  <p class="text-sm">Acompanhe métricas para demonstrar valor e ajustar estratégias.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Simulador Interativo -->
+      <div id="simulatorPage" class="page hidden">
+        <div class="container py-12">
+          <div class="text-center mb-12 fade-in">
+            <h1 class="text-4xl font-bold text-gray-800 mb-4">Simulador Interativo</h1>
+            <p class="text-xl text-gray-600">Teste cenários e veja soluções 4.0 na prática</p>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Controles do Simulador -->
+            <div class="card">
+              <h3 class="text-xl font-bold mb-6">Configurações da Fazenda</h3>
+              
+              <div class="space-y-6">
+                <div class="simulator-control">
+                  <label class="block text-sm font-semibold mb-2">Sensores IoT</label>
+                  <input type="range" class="slider" min="0" max="50" value="20" id="iotSensors" oninput="updateSimulatorResults()">
+                  <div class="flex justify-between text-sm text-gray-500 mt-1">
+                    <span>0</span>
+                    <span id="iotValue">20 sensores</span>
+                    <span>50</span>
+                  </div>
+                </div>
+                
+                <div class="simulator-control">
+                  <label class="block text-sm font-semibold mb-2">Robôs de Ordenha</label>
+                  <input type="range" class="slider" min="0" max="5" value="2" id="milkingRobots" oninput="updateSimulatorResults()">
+                  <div class="flex justify-between text-sm text-gray-500 mt-1">
+                    <span>0</span>
+                    <span id="robotValue">2 robôs</span>
+                    <span>5</span>
+                  </div>
+                </div>
+                
+                <div class="simulator-control">
+                  <label class="block text-sm font-semibold mb-2">Quantidade de Ração (kg/dia)</label>
+                  <input type="range" class="slider" min="100" max="1000" value="500" id="feedAmount" oninput="updateSimulatorResults()">
+                  <div class="flex justify-between text-sm text-gray-500 mt-1">
+                    <span>100</span>
+                    <span id="feedValue">500 kg</span>
+                    <span>1000</span>
+                  </div>
+                </div>
+                
+                <div class="simulator-control">
+                  <label class="block text-sm font-semibold mb-2">Número de Vacas</label>
+                  <input type="range" class="slider" min="10" max="200" value="50" id="cowCount" oninput="updateSimulatorResults()">
+                  <div class="flex justify-between text-sm text-gray-500 mt-1">
+                    <span>10</span>
+                    <span id="cowValue">50 vacas</span>
+                    <span>200</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Resultados do Simulador -->
+            <div class="card">
+              <h3 class="text-xl font-bold mb-6">Resultados da Simulação</h3>
+              
+              <div class="space-y-6">
+                <div class="stat-widget">
+                  <h4 class="text-sm font-semibold text-gray-600 mb-2">Produtividade</h4>
+                  <div class="text-3xl font-bold text-green-600" id="productivityResult">+15%</div>
+                  <p class="text-sm text-gray-500">Aumento na produção de leite</p>
+                </div>
+                
+                <div class="stat-widget">
+                  <h4 class="text-sm font-semibold text-gray-600 mb-2">Detecção de Mastite</h4>
+                  <div class="text-3xl font-bold text-blue-600" id="mastiteResult">+5%</div>
+                  <p class="text-sm text-gray-500">Melhoria na detecção precoce</p>
+                </div>
+                
+                <div class="stat-widget">
+                  <h4 class="text-sm font-semibold text-gray-600 mb-2">Redução de Perdas</h4>
+                  <div class="text-3xl font-bold text-red-600" id="lossResult">-200L</div>
+                  <p class="text-sm text-gray-500">Litros salvos por mês</p>
+                </div>
+                
+                <div class="stat-widget">
+                  <h4 class="text-sm font-semibold text-gray-600 mb-2">Lucro Estimado</h4>
+                  <div class="text-3xl font-bold text-green-600" id="profitResult">R$ 15.000</div>
+                  <p class="text-sm text-gray-500">Lucro mensal estimado</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Exemplos Práticos -->
+          <div class="card mt-8">
+            <h3 class="text-xl font-bold mb-6">Exemplos Práticos de Impacto</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="p-4 bg-green-50 rounded-lg">
+                <h4 class="font-bold text-green-700 mb-2">
+                  <i class="fas fa-plus-circle mr-2"></i>
+                  +2 Sensores IoT
+                </h4>
+                <ul class="text-sm text-green-600 space-y-1">
+                  <li>• 5% mais detecção precoce de mastite</li>
+                  <li>• Evita perda de 200 litros/mês</li>
+                  <li>• ROI em 8 meses</li>
+                </ul>
+              </div>
+              
+              <div class="p-4 bg-blue-50 rounded-lg">
+                <h4 class="font-bold text-blue-700 mb-2">
+                  <i class="fas fa-robot mr-2"></i>
+                  +1 Robô de Ordenha
+                </h4>
+                <ul class="text-sm text-blue-600 space-y-1">
+                  <li>• 10% menos contaminação</li>
+                  <li>• +8% produtividade</li>
+                  <li>• Economia de 2h/dia de trabalho</li>
+                </ul>
+              </div>
+              
+              <div class="p-4 bg-yellow-50 rounded-lg">
+                <h4 class="font-bold text-yellow-700 mb-2">
+                  <i class="fas fa-seedling mr-2"></i>
+                  Ração Otimizada
+                </h4>
+                <ul class="text-sm text-yellow-600 space-y-1">
+                  <li>• +12% na produção de leite</li>
+                  <li>• Melhor saúde do rebanho</li>
+                  <li>• Redução de 15% nos custos</li>
+                </ul>
+              </div>
+              
+              <div class="p-4 bg-purple-50 rounded-lg">
+                <h4 class="font-bold text-purple-700 mb-2">
+                  <i class="fas fa-chart-line mr-2"></i>
+                  Monitoramento Completo
+                </h4>
+                <ul class="text-sm text-purple-600 space-y-1">
+                  <li>• 95% de detecção precoce</li>
+                  <li>• 30% redução custos veterinários</li>
+                  <li>• +25% eficiência operacional</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+  <!-- Modal para Tecnologias -->
+  <div id="techModal" class="modal">
+    <div class="modal-content">
+      <div class="flex justify-between items-center mb-6">
+        <h2 id="modalTitle" class="text-2xl font-bold"></h2>
+        <button onclick="closeTechModal()" class="text-gray-500 hover:text-gray-700">
+          <i class="fas fa-times text-xl"></i>
+        </button>
+      </div>
+      <div id="modalContent">
+        <!-- Conteúdo será inserido dinamicamente -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Variáveis globais
+    let currentUser = '';
+    let currentPage = 'home';
+
+    // Dados simulados
+    const techData = {
+      ordenha: {
+        title: 'Ordenha Automatizada',
+        problem: 'Contaminação do leite e inconsistência na produção devido a variações no processo manual.',
+        solution: 'Robôs de ordenha com sensores integrados monitoram higiene, fluxo e qualidade em tempo real, detectando automaticamente alterações e aplicando correções.',
+        benefits: [
+          '95% da ordenha automatizada',
+          '0.5% de contaminação (vs 3% manual)',
+          '24h/dia de operação contínua',
+          'Redução de 40% no tempo de processo'
+        ]
+      },
+      tanques: {
+        title: 'Tanques Inteligentes',
+        problem: 'Perda de qualidade do leite por temperatura irregular e falta de monitoramento contínuo.',
+        solution: 'Sensores IoT monitoram temperatura, pH e nível do leite 24/7, gerando alertas automáticos e acionando sistemas de correção.',
+        benefits: [
+          'Temperatura média mantida: 4.2°C',
+          'Nível médio otimizado: 70%',
+          'Alertas em tempo real',
+          '99.8% de uptime do sistema'
+        ]
+      },
+      distribuicao: {
+        title: 'Distribuição Rastreada',
+        problem: 'Atrasos e perdas no transporte comprometem a qualidade e aumentam custos operacionais.',
+        solution: 'Sistema de rastreamento GPS integrado com sensores de temperatura e vibração nos caminhões, garantindo entrega dentro dos padrões de qualidade.',
+        benefits: [
+          'Atraso médio reduzido para 5%',
+          '98% das entregas dentro do padrão',
+          'Rastreamento em tempo real',
+          'Redução de 25% nas perdas'
+        ]
+      },
+      pastagem: {
+        title: 'Pastagem Monitorada',
+        problem: 'Pastagens degradadas reduzem produtividade do rebanho e aumentam custos com ração suplementar.',
+        solution: 'Drones equipados com câmeras multiespectrais analisam a saúde da vegetação, permitindo ações rápidas de recuperação e rotação otimizada.',
+        benefits: [
+          '85% da área com índice ótimo',
+          'Detecção precoce de problemas',
+          'Rotação otimizada de pastagem',
+          'Redução de 30% nos custos de ração'
+        ]
+      }
+    };
+
+    // Funções de navegação
+    function login(event) {
+      event.preventDefault();
+      const producerName = document.getElementById('producerName').value.trim();
+      if (producerName) {
+        currentUser = producerName;
+        document.getElementById('loginScreen').classList.add('hidden');
+        document.getElementById('dashboard').classList.remove('hidden');
+        document.getElementById('userGreeting').textContent = `Olá, ${producerName}!`;
+        document.getElementById('userInitial').textContent = producerName.charAt(0).toUpperCase();
+        document.getElementById('personalizedWelcome').textContent = `Olá, ${producerName}! Vamos otimizar sua produção!`;
+        showPage('home');
+      }
+    }
+
+    function logout() {
+      currentUser = '';
+      document.getElementById('dashboard').classList.add('hidden');
+      document.getElementById('loginScreen').classList.remove('hidden');
+      document.getElementById('producerName').value = '';
+      closeSidebar();
+    }
+
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.querySelector('.sidebar-overlay');
+      sidebar.classList.toggle('active');
+      overlay.classList.toggle('active');
+    }
+
+    function closeSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.querySelector('.sidebar-overlay');
+      sidebar.classList.remove('active');
+      overlay.classList.remove('active');
+    }
+
+    function showPage(pageId, element) {
+      // Esconder todas as páginas
+      document.querySelectorAll('.page').forEach(page => {
+        page.classList.add('hidden');
+      });
+      
+      // Mostrar página selecionada
+      const targetPage = document.getElementById(pageId + 'Page');
+      if (targetPage) {
+        targetPage.classList.remove('hidden');
+      }
+      
+      // Atualizar navegação ativa
+      document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
+      });
+      
+      if (element) {
+        element.classList.add('active');
+      }
+      
+      currentPage = pageId;
+      closeSidebar();
+      
+      // Inicializar gráficos se necessário
+      if (pageId === 'monitoring') {
+        setTimeout(() => initMonitoringChart(), 100);
+      }
+    }
+
+    // Funções do modal
+    function showTechModal(techType) {
+      const modal = document.getElementById('techModal');
+      const modalTitle = document.getElementById('modalTitle');
+      const modalContent = document.getElementById('modalContent');
+      
+      const data = techData[techType];
+      
+      modalTitle.textContent = data.title;
+      modalContent.innerHTML = `
+        <div class="space-y-6">
+          <div class="p-4 bg-red-50 rounded-lg">
+            <h4 class="font-bold text-red-700 mb-2">Problema:</h4>
+            <p class="text-red-600">${data.problem}</p>
+          </div>
+          
+          <div class="p-4 bg-green-50 rounded-lg">
+            <h4 class="font-bold text-green-700 mb-2">Solução 4.0:</h4>
+            <p class="text-green-600">${data.solution}</p>
+          </div>
+          
+          <div class="p-4 bg-blue-50 rounded-lg">
+            <h4 class="font-bold text-blue-700 mb-2">Benefícios:</h4>
+            <ul class="text-blue-600 space-y-1">
+              ${data.benefits.map(benefit => `<li>• ${benefit}</li>`).join('')}
+            </ul>
+          </div>
+          
+          <button onclick="closeTechModal()" class="btn w-full">
+            <i class="fas fa-check"></i>
+            Entendi, como isso resolve meus problemas!
+          </button>
+        </div>
+      `;
+      
+      modal.classList.add('active');
+    }
+
+    function closeTechModal() {
+      document.getElementById('techModal').classList.remove('active');
+    }
+
+    // Funções do simulador
+    function updateSimulation() {
+      const racao = document.getElementById('racaoSlider').value;
+      const sensores = document.getElementById('sensoresSlider').value;
+      const robots = document.getElementById('robotsSlider').value;
+      
+      document.getElementById('racaoValue').textContent = parseInt(racao).toLocaleString();
+      document.getElementById('sensoresValue').textContent = sensores;
+      document.getElementById('robotsValue').textContent = robots;
+      
+      // Cálculos simulados
+      const produtividade = Math.round((racao/5000 * 10) + (sensores/20 * 5) + (robots/2 * 8));
+      const reducao = Math.round((sensores/20 * 5) + (robots/2 * 3));
+      const lucro = Math.round((produtividade * 500) + (reducao * 200));
+      
+      document.getElementById('produtividadeResult').textContent = `+${produtividade}%`;
+      document.getElementById('reducaoResult').textContent = `-${reducao}%`;
+      document.getElementById('lucroResult').textContent = `R$ ${lucro.toLocaleString()}`;
+    }
+
+    function updateSimulatorResults() {
+      const iot = document.getElementById('iotSensors').value;
+      const robots = document.getElementById('milkingRobots').value;
+      const feed = document.getElementById('feedAmount').value;
+      const cows = document.getElementById('cowCount').value;
+      
+      document.getElementById('iotValue').textContent = `${iot} sensores`;
+      document.getElementById('robotValue').textContent = `${robots} robôs`;
+      document.getElementById('feedValue').textContent = `${feed} kg`;
+      document.getElementById('cowValue').textContent = `${cows} vacas`;
+      
+      // Cálculos mais complexos
+      const productivity = Math.round((parseInt(iot)/50 * 20) + (parseInt(robots)/5 * 15) + (parseInt(feed)/1000 * 10));
+      const mastite = Math.round((parseInt(iot)/50 * 10) + (parseInt(robots)/5 * 3));
+      const loss = Math.round((parseInt(iot)/50 * 300) + (parseInt(robots)/5 * 150));
+      const profit = Math.round((productivity * parseInt(cows) * 25) + (mastite * 100));
+      
+      document.getElementById('productivityResult').textContent = `+${productivity}%`;
+      document.getElementById('mastiteResult').textContent = `+${mastite}%`;
+      document.getElementById('lossResult').textContent = `-${loss}L`;
+      document.getElementById('profitResult').textContent = `R$ ${profit.toLocaleString()}`;
+    }
+
+    // Função para inicializar gráfico de monitoramento
+    function initMonitoringChart() {
+      const ctx = document.getElementById('monitoringChart');
+      if (!ctx) return;
+      
+      new Chart(ctx.getContext('2d'), {
+        type: 'line',
+        data: {
+          labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
+          datasets: [
+            {
+              label: 'Temperatura (°C)',
+              data: [4.1, 4.2, 4.3, 4.2, 4.1, 4.2],
+              borderColor: '#22c55e',
+              backgroundColor: 'rgba(34, 197, 94, 0.1)',
+              tension: 0.4,
+              fill: true
+            },
+            {
+              label: 'Produção (L/h)',
+              data: [45, 52, 68, 75, 62, 48],
+              borderColor: '#3b82f6',
+              backgroundColor: 'rgba(59, 130, 246, 0.1)',
+              tension: 0.4
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              labels: { color: '#374151' }
+            }
+          },
+          scales: {
+            x: {
+              ticks: { color: '#6b7280' },
+              grid: { color: 'rgba(107, 114, 128, 0.1)' }
+            },
+            y: {
+              ticks: { color: '#6b7280' },
+              grid: { color: 'rgba(107, 114, 128, 0.1)' }
+            }
+          }
+        }
+      });
+    }
+
+    // Inicialização
+    document.addEventListener('DOMContentLoaded', function() {
+      // Fechar modal ao clicar fora
+      document.getElementById('techModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+          closeTechModal();
+        }
+      });
+      
+      // Inicializar valores do simulador
+      updateSimulation();
+      updateSimulatorResults();
+    });
+
+    // Navegação por teclado
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeTechModal();
+        closeSidebar();
+      }
+    });
+  </script>
+</body>
+</html>
